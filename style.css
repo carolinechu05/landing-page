@@ -1,0 +1,383 @@
+        body{
+            margin: 0;
+            font-family: 'Cormorant Garamond', serif;
+            background: linear-gradient(to bottom, #fff0f5, #f0e6fa);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 150vh;
+            overflow-y: auto;
+            position: relative;
+            background: url('https://framerusercontent.com/images/ydOniYFagVSKunOHTdqXBi7T0gI.png'); /* overlays it with a background image */
+            background-size: cover;  /* makes the image cover the entire screen */
+        }
+
+        .header_text {
+            font-family: "Cormorant Garamond", "Cormorant Garamond Placeholder", serif;
+            font-size: 40px;
+            font-style: italic;
+            font-weight: 500;
+            letter-spacing: 0em;
+            line-height: 1em;
+            color: rgb(251, 162, 181);
+            display: flex;
+            align-items: start;
+            justify-content: left;
+            padding: 15px;
+            width: 100%;
+            height: 100%;
+            position: relative;
+        }
+
+        .intro-section {
+            text-align: center;
+            padding: 20px;
+            max-width: 700px;
+            margin-bottom: 20px;
+            border-radius: 10px;
+        }
+
+
+        .intro-section {
+            flex: none;
+            margin: 5%;
+        }
+
+        /* creates a 3D viewing space. Think of "perspective" like looking at something from far away - it makes 3D effects possible. */
+        .carousel-container {
+            perspective: 1200px;
+            width: 700px;
+            height: 600px;
+            position: relative;
+            margin: 10%;
+        }
+
+        .carousel {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            transform-style: preserve-3d;
+            animation: rotate 30s infinite linear; /* makes the entire carousel spin continuously, taking 30 seconds for one full rotation */
+        }
+
+        .carousel.paused {
+            animation-play-state: paused;
+        }
+
+        /* indiviual panel design 
+        - creates rectangular cards
+        - makes them semi-transparent pink
+        - positions them in 3D space using transform
+        - each panel is rotated differently (0°, 120°, 240°) to form a triangle */
+        .panel {
+            position: absolute;
+            width: 220px;
+            height: 320px;
+            left: 240px;
+            top: 65px;
+            background: rgba(255, 192, 203, 0.85);
+            border-radius: 15px;
+            box-shadow: 0 4px 20px rgba(255, 105, 180, 0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            overflow: hidden;
+            transition: transform 0.5s ease, width 0.5s ease, height 0.5s ease;
+            cursor: pointer;
+            border: none;
+        }
+
+        .panel.active {
+            width: 260px;
+            height: 360px;
+            transform: scale(1.2) translateZ(320px);
+            z-index: 10;
+        }
+
+        .panel img.background-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            position: absolute;
+            z-index: -1;
+            opacity: 0.7;
+        }
+
+        .prompt {
+            font-size: 18px;
+            color: #2f2f2f;
+            font-weight: 700;
+            padding: 15px;
+            background: rgba(255, 245, 238, 0.75);
+            border-radius: 10px;
+            z-index: 1;
+            text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.8);
+            backface-visibility: hidden;
+        }
+
+        .panel.active .prompt {
+            display: none;
+        }
+
+        .panel.active .image-slider {
+            display: block;
+        }
+
+        .panel:not(.active) .image-slider {
+            display: none;
+        }
+
+        .panel:not(.active) .background-image {
+            display: block;
+        }
+
+        .panel.active .background-image {
+            display: none;
+        }
+
+        .panel:nth-child(1) {
+            transform: rotateY(0deg) translateZ(350px);
+        }
+
+        .panel:nth-child(2) {
+            transform: rotateY(120deg) translateZ(350px);
+        }
+
+        .panel:nth-child(3) {
+            transform: rotateY(240deg) translateZ(350px);
+        }
+
+        @keyframes rotate {
+            from { transform: rotateY(0deg); }
+            to { transform: rotateY(360deg); }
+        }
+
+        .carousel-container::before {
+            content: '';
+            position: absolute;
+            top: -80px;
+            width: 800px;
+            height: 15px;
+            border-radius: 50%;
+            z-index: -1;
+            box-shadow: 0 0 25px rgba(216, 182, 203, 0.6);
+            animation: sparkle 2s infinite;
+            display: block; /* Added to enable width and height */
+            left: 50%; /* Center horizontally */
+            transform: translateX(-50%); /* Adjust for centering */
+        }
+
+        .carousel-container::after {
+            content: '';
+            position: absolute;
+            width: 50px;
+            height: 50px;
+            top: -130px;
+            left: 50%;
+            transform: translateX(-50%);
+            border-radius: 50%;
+            z-index: -1;
+            box-shadow: 0 0 25px rgba(216, 182, 203, 0.6);
+            animation: sparkle 2s infinite;
+        }
+
+        @keyframes sparkle {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        .image-slider {
+            display: none;
+            width: 100%;
+            height: 100%;
+            position: relative;
+            overflow: hidden;
+            border: none;
+        }
+
+        .image-slide {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+            border: none;
+        }
+
+        .image-slide.active {
+            opacity: 1;
+        }
+
+        .image-slide img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border: none;
+            display: block;
+        }
+
+        .arrow {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: transparent;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            cursor: pointer;
+            font-size: 18px;
+            z-index: 2;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+            font-weight: bold;
+        }
+
+        .arrow:hover {
+            color: #ff69b4;
+        }
+
+        .arrow-left {
+            left: 10px;
+        }
+
+        .arrow-right {
+            right: 10px;
+        }
+
+        .close-button {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: transparent;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-size: 20px;
+            z-index: 2;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: color 0.3s ease;
+            font-weight: bold;
+        }
+
+        .close-button:hover {
+            color: #ff69b4;
+        }
+
+        .image-placeholder {
+            width: 100%;
+            height: 100%;
+            background: transparent;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            color: #666;
+            font-weight: bold;
+            z-index: 1;
+            border: none;
+        }
+
+        .slider-text {
+            font-size: 15px;
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: white;
+            font-size: 16px;
+            font-weight: 700;
+            text-align: center;
+            padding: 10px 20px;
+            /* background: rgba(0, 0, 0, 0.5); */
+            border-radius: 5px;
+            z-index: 2;
+            /* max-width: 80%; */
+            overflow: hidden;
+            white-space: nowrap;
+            display: none;
+        }
+
+        .image-slide.active .slider-text {
+            display: block;
+            animation: typing 5s steps(50, end);
+        }
+
+        @keyframes typing {
+            from { width: 0; }
+            to { width: 100%; }
+        }
+        
+        .footer-section {
+        font-family: "Space Grotesk", sans-serif;
+        padding: 40px 20px;
+        width: 300px;
+        margin: 60px auto;
+        border-radius: 12px;
+        }
+
+        .footer-section .text {
+        font-weight: 500;
+        letter-spacing: 0.3px;
+        font-size: 15px;
+        color: #7f7c7c;
+        margin: 15px 0 3px;
+        }
+
+        .footer-section input[type="text"], input[type="email"]{
+        font-family: "Space Grotesk", sans-serif;
+        color: #575555;
+        width: 100%;
+        padding: 12px 14px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        font-size: 13px;
+        letter-spacing: 0.4px;
+        line-height: 1.5;
+        transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        box-sizing: border-box;
+        }
+
+        .footer-section input[type="text"]:focus {
+        color: #575555;
+        border-color: #c3a1ba;
+        box-shadow: 0 0 0 3px rgba(131, 135, 141, 0.1);
+        outline: none;
+        }
+
+        .footer-section .submit-button {
+        font-family: "Space Grotesk", sans-serif;
+        margin-top: 15px;
+        padding: 12px 14px; 
+        border: none;
+        background: #b88aaf;
+        color: #fff;
+        font-size: 13px;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: background 0.3s ease;
+        width: 100%;
+        box-sizing: border-box;
+        }
+
+        .footer-section .submit-button:hover {
+        background: #d1b8ce;
+        }
+
+        .footer-section input[type="text"]::placeholder {
+        color: #898484;
+        font: inherit;
+        }
+
+        .quote {
+        margin: 30px 0 0 0;
+        font-size: 13px;  
+        color: #695f5f;
+        text-align: center;
+        }

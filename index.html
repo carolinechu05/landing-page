@@ -1,0 +1,101 @@
+<!-- Reference: ChatGPT for some debugging and learn how to connect the data to Google sheet -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="framer-search-index" content="https://framerusercontent.com/sites/7hnEQRTggossJSdqwXCrVd/searchIndex-vWaKb3BqjHhg.json">
+    <link rel="stylesheet" type="text/css" href="style.css">
+    <title>sift — emotional, curated luxury shopping</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300..700;1,300..700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300..700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <section class="intro-section" aria-label="Carousel Introduction">
+        <h1 class="header_text">Explore Emotional Shopping</h1>
+        <p>Discover curated luxury items that resonate with your unique story. Click a panel to dive into a world of emotions and style.</p>
+    </section>
+    <section class="carousel-container">
+        <div class="carousel">
+            <div class="panel" data-index="0">
+                <img src="image/prompt1/background.png" alt="Prompt 1 mood" class="background-image">
+                <div class="prompt"></div>
+                <div class="image-slider">
+                    <div class="image-slide">
+                        <img src="image/prompt1/image1.png" alt="Prompt 1 image 1" class="slider-image">
+                        <div class="slider-text"></div>
+                    </div>
+                    <div class="image-slide">
+                        <img src="image/prompt1/image2.png" alt="Prompt 1 image 2" class="slider-image">
+                        <div class="slider-text"></div>
+                    </div>
+                    <div class="image-slide">
+                        <img src="image/prompt1/image3.png" alt="Prompt 1 image 3" class="slider-image">
+                        <div class="slider-text"></div>
+                    </div>
+                    <button class="arrow arrow-left">&larr;</button>
+                    <button class="arrow arrow-right">&rarr;</button>
+                    <button class="close-button">&times;</button>
+                </div>
+            </div>
+            <div class="panel" data-index="1">
+                <img src="image/prompt2/background.png" alt="Prompt 2 mood" class="background-image">
+                <div class="prompt"></div>
+                <div class="image-slider">
+                    <div class="image-slide">
+                        <img src="image/prompt2/image1.png" alt="Prompt 2 image 1" class="slider-image">
+                        <div class="slider-text"></div>
+                    </div>
+                    <div class="image-slide">
+                        <img src="image/prompt2/image2.png" alt="Prompt 2 image 2" class="slider-image">
+                        <div class="slider-text"></div>
+                    </div>
+                    <div class="image-slide">
+                        <img src="image/prompt2/image3.png" alt="Prompt 2 image 3" class="slider-image">
+                        <div class="slider-text"></div>
+                    </div>
+                    <button class="arrow arrow-left">&larr;</button>
+                    <button class="arrow arrow-right">&rarr;</button>
+                    <button class="close-button">&times;</button>
+                </div>
+            </div>
+            <div class="panel" data-index="2">
+                <img src="image/prompt3/background.png" alt="Prompt 3 mood" class="background-image">
+                <div class="prompt"></div>
+                <div class="image-slider">
+                    <div class="image-slide">
+                        <img src="image/prompt3/image1.png" alt="Prompt 3 image 1" class="slider-image">
+                        <div class="slider-text"></div>
+                    </div>
+                    <div class="image-slide">
+                        <img src="image/prompt3/image2.png" alt="Prompt 3 image 2" class="slider-image">
+                        <div class="slider-text"></div>
+                    </div>
+                    <div class="image-slide">
+                        <img src="image/prompt3/image3.png" alt="Prompt 3 image 3" class="slider-image">
+                        <div class="slider-text"></div>
+                    </div>
+                    <button class="arrow arrow-left">&larr;</button>
+                    <button class="arrow arrow-right">&rarr;</button>
+                    <button class="close-button">&times;</button>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section class="footer-section" aria-label="Footer">
+        <form id="waitlistForm">
+            <p class="text">submit a prompt</p>
+            <input type="text" name="prompt" id="promptInput" placeholder="to become impossible to look away from">
+            <p class="text">email</p>
+            <input type="email" name="email" id="emailInput" placeholder="jane@sift.com" required>
+            <button class="submit-button" type="submit">join waitlist</button>
+        </form>
+        <p class="quote">“everything you liked, i liked five years ago”<br>- virgil abloh</p>
+    </section>
+
+    <script src="script.js"></script>
+</body>
+</html>

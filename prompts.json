@@ -1,0 +1,44 @@
+[
+    {
+        "prompt": "for the party you weren’t cool enough to be invited to as a kid.",
+        "background": "image/prompt1/background.png",
+        "sliderImages": [
+            "image/prompt1/image1.png",
+            "image/prompt1/image2.png",
+            "image/prompt1/image3.png"
+        ],
+        "sliderText": [
+            "Bold vibes for the ultimate comeback",
+            "Shine bright, steal the show",
+            "Confidence in every step"
+        ]
+    },
+    {
+        "prompt": "the girl who remembered everything, even after he acted like none of it ever happened.",
+        "background": "image/prompt2/background.png",
+        "sliderImages": [
+            "image/prompt2/image1.png",
+            "image/prompt2/image2.png",
+            "image/prompt2/image3.png"
+        ],
+        "sliderText": [
+            "Memories that never fade",
+            "Strength in every detail",
+            "Embrace your story"
+        ]
+    },
+    {
+        "prompt": "the night you swore it would just be one drink and then the night became go big or go home.",
+        "background": "image/prompt3/background.png",
+        "sliderImages": [
+            "image/prompt3/image1.png",
+            "image/prompt3/image2.png",
+            "image/prompt3/image3.png"
+        ],
+        "sliderText": [
+            "Live for the moment",
+            "Epic nights, epic fights",
+            "Go big, never home"
+        ]
+    }
+]
