@@ -1,4 +1,5 @@
         body{
+            cursor: none !important; /* hides the default pointer */
             margin: 0;
             font-family: 'Cormorant Garamond', serif;
             background: linear-gradient(to bottom, #fff0f5, #f0e6fa);
@@ -6,7 +7,7 @@
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            min-height: 150vh;
+            min-height: 100vh;
             overflow-y: auto;
             position: relative;
             background: url('https://framerusercontent.com/images/ydOniYFagVSKunOHTdqXBi7T0gI.png'); /* overlays it with a background image */
@@ -15,7 +16,7 @@
 
         .header_text {
             font-family: "Cormorant Garamond", "Cormorant Garamond Placeholder", serif;
-            font-size: 40px;
+            font-size: 50px;
             font-style: italic;
             font-weight: 500;
             letter-spacing: 0em;
@@ -29,7 +30,10 @@
             height: 100%;
             position: relative;
         }
-
+        p {
+            font-size: 25px;
+            color: #575555;
+        }
         .intro-section {
             text-align: center;
             padding: 20px;
@@ -50,7 +54,7 @@
             width: 700px;
             height: 600px;
             position: relative;
-            margin: 10%;
+            margin: 10% 0 0 0;
         }
 
         .carousel {
@@ -87,7 +91,9 @@
             transition: transform 0.5s ease, width 0.5s ease, height 0.5s ease;
             cursor: pointer;
             border: none;
+
         }
+
 
         .panel.active {
             width: 260px;
@@ -285,29 +291,26 @@
         }
 
         .slider-text {
-            font-size: 15px;
+            font-size: 12px;
             position: absolute;
             top: 20px;
-            left: 50%;
+            left: 45%;
+            right: -15%;
             transform: translateX(-50%);
             color: white;
-            font-size: 16px;
             font-weight: 700;
-            text-align: center;
-            padding: 10px 20px;
-            /* background: rgba(0, 0, 0, 0.5); */
+            text-align: left;
             border-radius: 5px;
             z-index: 2;
-            /* max-width: 80%; */
-            overflow: hidden;
-            white-space: nowrap;
-            display: none;
-        }
 
+            white-space: pre-line;
+            overflow: hidden;
+            line-height: 1.4;
+        }
         .image-slide.active .slider-text {
             display: block;
-            animation: typing 5s steps(50, end);
         }
+
 
         @keyframes typing {
             from { width: 0; }
@@ -380,4 +383,27 @@
         font-size: 13px;  
         color: #695f5f;
         text-align: center;
+        }
+
+        .custom-cursor {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 32px;
+            height: 32px;
+            background: url('mouse.png') no-repeat center/contain;
+            pointer-events: none;
+            z-index: 9999;
+            animation: cursorPulse 1.2s ease-in-out infinite;
+        }
+
+        @keyframes cursorPulse {
+            0%, 100% {
+                transform: translate(-50%, -50%) scale(1);
+                filter: drop-shadow(0 0 4px rgba(255, 255, 255, 0.6));
+            }
+            50% {
+                transform: translate(-50%, -50%) scale(1.15);
+                filter: drop-shadow(0 0 12px rgba(255, 182, 193, 0.9));
+            }
         }

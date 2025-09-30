@@ -1,16 +1,29 @@
-        // Typing animation function
+        let typingTimeout = null;
+
+        // Typing animation function (uses DOM nodes so <br> stays)
         function typeText(element, text, speed = 100) {
-            element.textContent = ''; // Clears the text
+            if (typingTimeout) clearTimeout(typingTimeout);
+            element.textContent = ''; 
             let i = 0;
+
             function type() {
                 if (i < text.length) {
-                    element.textContent += text.charAt(i);
+                    element.textContent += text[i];  // textContent preserves \n
                     i++;
-                    setTimeout(type, speed); // Adds one character at a time with a 100ms delay
+                    typingTimeout = setTimeout(type, speed);
+                } else {
+                    typingTimeout = null;
                 }
             }
             type();
         }
+
+        // for mouse cursor animation
+        const cursor = document.querySelector('.custom-cursor');
+        document.addEventListener('mousemove', e => {
+            cursor.style.left = e.clientX + 'px';
+            cursor.style.top = e.clientY + 'px';
+        });
 
         // Fetch JSON data and initialize carousel
         window.addEventListener('load', function() {
@@ -60,7 +73,7 @@
 
                     // Event listeners
                     panel.addEventListener('click', function(e) {
-                        e.stopPropagation();
+                        e.stopPropagation(); // prevents the click from “bubbling up” to parent elements (so the carousel container doesn’t accidentally handle it too).
                         if (activePanel === panel) {
                             // Close logic
                             panel.classList.remove('active');
@@ -78,7 +91,8 @@
                                 activePanel.querySelector('.background-image').style.display = 'block';
                                 activePanel.querySelector('.prompt').style.display = 'block';
                             }
-                            
+
+
                             panel.classList.add('active');
                             setTimeout(function() { // Wait 0.5 seconds for the enlargement animation
                                 slider.style.display = 'block';
@@ -113,7 +127,6 @@
                         activePanel = null;
                     });
 
-                    showSlide(currentSlide);
                 });
 
                 // Image error handling
@@ -134,11 +147,9 @@
             });
         });
 
-        // Initialize carousel after fetching data
-        initCarousel();
-
         // Form submission
         // Sends the data to a Google Script
+        // Reference: ChatGPT to look for the stardard coding for linkage
         const scriptURL = "https://script.google.com/macros/s/AKfycbzQe3O4KuzH21alxgwm3CzceDktRBCNcYniNfaVVo7LMbrfTnEyRzHfMJaS8Y6_lWW6Ow/exec";
         document.getElementById("waitlistForm").addEventListener("submit", async (e) => {
             e.preventDefault();
