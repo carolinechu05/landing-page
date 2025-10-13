@@ -1,166 +1,287 @@
-        let typingTimeout = null;
+let typingTimeout = null;
 
-        // Typing animation function (uses DOM nodes so <br> stays)
-        function typeText(element, text, speed = 100) {
-            if (typingTimeout) clearTimeout(typingTimeout);
-            element.textContent = ''; 
-            let i = 0;
+// Typing animation function (used only for header description)
+function typeText(element, text, speed = 100) {
+    if (typingTimeout) clearTimeout(typingTimeout);
+    
+    // Normalize text: remove HTML tags and preserve line breaks
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(text, 'text/html');
+    const cleanText = doc.body.textContent || text;
+    const textWithBreaks = cleanText.replace(/\n/g, '\n');
+    
+    // Set full text temporarily to calculate height
+    element.textContent = textWithBreaks;
+    element.style.visibility = 'hidden';
+    const height = element.offsetHeight;
+    element.style.minHeight = `${height}px`;
+    element.style.visibility = 'visible';
+    element.textContent = '';
+    
+    let i = 0;
+    function type() {
+        if (i < textWithBreaks.length) {
+            element.textContent += textWithBreaks[i];
+            i++;
+            typingTimeout = setTimeout(type, speed);
+        } else {
+            typingTimeout = null;
+            element.style.minHeight = 'auto';
+            element.innerHTML = text;
+        }
+    }
+    type();
+}
 
-            function type() {
-                if (i < text.length) {
-                    element.textContent += text[i];  // textContent preserves \n
-                    i++;
-                    typingTimeout = setTimeout(type, speed);
-                } else {
-                    typingTimeout = null;
-                }
+// Function to shuffle and select 3 unique prompts
+function getRandomPrompts(prompts, count = 3) {
+    const validPrompts = prompts.filter(p => 
+        p.prompt && p.background && 
+        Array.isArray(p.sliderImages) && p.sliderImages.length > 0 && 
+        Array.isArray(p.sliderText) && p.sliderText.length > 0
+    );
+    const shuffled = [...validPrompts].sort(() => Math.random() - 0.5);
+    return shuffled.slice(0, Math.min(count, validPrompts.length));
+}
+
+// Track carousel rotation angle
+let currentRotation = 0;
+let animationStartTime = Date.now();
+const rotationSpeed = 360 / 30000;
+
+// Function to check if panel is facing backward and adjust visibility
+function updatePanelVisibility() {
+    const carousel = document.querySelector('.carousel');
+    const panels = document.querySelectorAll('.panel');
+    const isPaused = carousel.classList.contains('paused');
+    const isMobile = window.innerWidth <= 768;
+
+    if (!isPaused) {
+        const elapsed = Date.now() - animationStartTime;
+        currentRotation = (elapsed * rotationSpeed) % 360;
+    }
+    
+    panels.forEach((panel, index) => {
+        const promptEl = panel.querySelector('.prompt');
+        const backgroundImage = panel.querySelector('.background-image');
+        
+        if (panel.classList.contains('active')) {
+            return;
+        }
+        
+        const baseRotation = index * 120;
+        const totalRotation = (baseRotation + currentRotation) % 360;
+        
+        let opacity = 1;
+        if (isMobile) {
+            if (totalRotation >= 90 && totalRotation <= 270) {
+                opacity = 0;
             }
-            type();
+        } else {
+            if (totalRotation >= 70 && totalRotation <= 110) {
+                opacity = Math.max(0, (110 - totalRotation) / 40);
+            } else if (totalRotation > 110 && totalRotation < 250) {
+                opacity = 0;
+            } else if (totalRotation >= 250 && totalRotation <= 290) {
+                opacity = Math.max(0, (totalRotation - 250) / 40);
+            }
+        }
+        
+        if (promptEl) {
+            promptEl.style.opacity = opacity;
+            promptEl.style.pointerEvents = opacity > 0.1 ? 'auto' : 'none';
+        }
+        if (backgroundImage) {
+            backgroundImage.style.opacity = opacity * 0.7;
+            backgroundImage.style.pointerEvents = opacity > 0.1 ? 'auto' : 'none';
+        }
+        // Set pointer-events on the panel to disable clicks on back panels
+        panel.style.pointerEvents = opacity > 0.1 ? 'auto' : 'none';
+    });
+}
+
+// Function to update panels with new prompts
+function updatePanels(panels, selectedPrompts, carousel, activePanel) {
+    const isMobile = window.innerWidth <= 768;
+    const timestamp = new Date().getTime(); // Timestamp to force image reload
+    panels.forEach((panel, panelIndex) => {
+        const slider = panel.querySelector('.image-slider');
+        const promptEl = panel.querySelector('.prompt');
+        const imgEl = panel.querySelector('.slider-image');
+        const textEl = panel.querySelector('.slider-text');
+        const backgroundImage = panel.querySelector('.background-image');
+
+        if (panel.classList.contains('active')) {
+            panel.classList.remove('active');
+            slider.style.display = 'none';
+            promptEl.style.display = 'block';
+            backgroundImage.style.display = 'block';
+            textEl.classList.remove('fade-in');
+            textEl.classList.remove('scrolled');
+            carousel.classList.remove('paused');
         }
 
-        // for mouse cursor animation
-        const cursor = document.querySelector('.custom-cursor');
-        document.addEventListener('mousemove', e => {
-            cursor.style.left = e.clientX + 'px';
-            cursor.style.top = e.clientY + 'px';
-        });
+        const data = selectedPrompts[panelIndex] || {};
+        promptEl.textContent = data.prompt || 'Prompt not available';
+        imgEl.src = data.sliderImages ? `${data.sliderImages[0]}?${timestamp}` : '';
+        let sliderText = data.sliderText ? data.sliderText[0] : '';
+        if (isMobile && sliderText.length > 80) {
+            sliderText = sliderText.substring(0, 77) + '...';
+        }
+        textEl.textContent = sliderText;
+        backgroundImage.src = data.background ? `${data.background}?${timestamp}` : '';
+    });
+    
+    animationStartTime = Date.now();
+    currentRotation = 0;
+    updatePanelVisibility(); // Immediately update visibility after reshuffle
+    
+    return null;
+}
 
-        // Fetch JSON data and initialize carousel
-        window.addEventListener('load', function() {
-            fetch('prompts.json')
-            .then(function(response) { // Check if the file loaded successfully. If not (!response.ok means "if response is NOT ok"), create an error message
-                if (!response.ok) {
-                    throw new Error('HTTP error! status: ' + response.status);
+// Fetch JSON and initialize carousel
+window.addEventListener('load', function() {
+    const headerDesc = document.querySelector('.intro-section p');
+    if (headerDesc) {
+        typeText(headerDesc, headerDesc.innerHTML, 50);
+    }
+
+    fetch('prompts.json')
+        .then(response => {
+            if (!response.ok) throw new Error('HTTP error! status: ' + response.status);
+            return response.json();
+        })
+        .then(prompts => {
+            // Preload all images to prevent loading issues
+            prompts.forEach(p => {
+                if (p.background) {
+                    const bgImg = new Image();
+                    bgImg.src = p.background;
                 }
-                return response.json(); // Convert the loaded file from JSON format into JavaScript data
-            })
-            .then(function(prompts) {
-                var carousel = document.querySelector('.carousel');
-                var panels = document.querySelectorAll('.panel');
-                var activePanel = null;
-
-                // Loop through each panel (there are 3 panels: index 0, 1, 2)
-                panels.forEach(function(panel, panelIndex) {
-                    var slider = panel.querySelector('.image-slider'); // the image slideshow container
-                    var slides = slider.querySelectorAll('.image-slide'); // all the individual images in the slideshow
-                    var leftArrow = panel.querySelector('.arrow-left'); //  the ← button
-                    var rightArrow = panel.querySelector('.arrow-right'); // the → button
-                    var closeButton = panel.querySelector('.close-button'); // the × button
-                    var prompt = panel.querySelector('.prompt'); // the text that appears on the panel
-                    var backgroundImage = panel.querySelector('.background-image'); // the background image
-                    var currentSlide = 0; // Start showing the first image (index 0)
-
-                    // Set content from JSON
-                    prompt.textContent = prompts[panelIndex].prompt;
-                    backgroundImage.src = prompts[panelIndex].background;
-
-                    slides.forEach(function(slide, slideIndex) { // Loop through each image slide in this panel
-                        var img = slide.querySelector('.slider-image'); // For each slide, find the image and text elements
-                        var textElement = slide.querySelector('.slider-text');
-                        img.src = prompts[panelIndex].sliderImages[slideIndex]; // Set the image source from our JSON data
-                        textElement.textContent = prompts[panelIndex].sliderText[slideIndex]; // Set the text content from our JSON data
+                if (Array.isArray(p.sliderImages)) {
+                    p.sliderImages.forEach(si => {
+                        const sliderImg = new Image();
+                        sliderImg.src = si;
                     });
+                }
+            });
 
-                    function showSlide(index) {
-                        slides.forEach(function(slide, i) {
-                            slide.classList.toggle('active', i === index); // If this slide number equals the index we want, add the 'active' class Otherwise, remove the 'active' class
-                            if (i === index) {
-                                var textElement = slide.querySelector('.slider-text');
-                                typeText(textElement, prompts[panelIndex].sliderText[i], 100);
-                            }
-                        });
-                    }
+            const carousel = document.querySelector('.carousel');
+            const panels = document.querySelectorAll('.panel');
+            let activePanel = null;
 
-                    // Event listeners
-                    panel.addEventListener('click', function(e) {
-                        e.stopPropagation(); // prevents the click from “bubbling up” to parent elements (so the carousel container doesn’t accidentally handle it too).
-                        if (activePanel === panel) {
-                            // Close logic
-                            panel.classList.remove('active');
-                            slider.style.display = 'none';
-                            backgroundImage.style.display = 'block';
-                            prompt.style.display = 'block';
-                            carousel.classList.remove('paused');
-                            activePanel = null;
+            let selectedPrompts = getRandomPrompts(prompts);
+            updatePanels(panels, selectedPrompts, carousel, activePanel);
+
+            setInterval(updatePanelVisibility, 50); // Keep interval but consider increasing to 100 for optimization if needed
+
+            panels.forEach((panel, panelIndex) => {
+                const slider = panel.querySelector('.image-slider');
+                const closeButton = panel.querySelector('.close-button');
+                const promptEl = panel.querySelector('.prompt');
+                const imgEl = panel.querySelector('.slider-image');
+                const textEl = panel.querySelector('.slider-text');
+                const backgroundImage = panel.querySelector('.background-image');
+
+                const imageScroll = panel.querySelector('.image-scroll');
+                imageScroll.addEventListener('scroll', () => {
+                    if (panel.classList.contains('active')) {
+                        if (imageScroll.scrollTop > 50) {
+                            textEl.classList.remove('fade-in');
+                            textEl.classList.add('scrolled');
                         } else {
-                            // Open logic
-                            if (activePanel) {
-                                // Close previous panel
-                                activePanel.classList.remove('active');
-                                activePanel.querySelector('.image-slider').style.display = 'none';
-                                activePanel.querySelector('.background-image').style.display = 'block';
-                                activePanel.querySelector('.prompt').style.display = 'block';
-                            }
-
-
-                            panel.classList.add('active');
-                            setTimeout(function() { // Wait 0.5 seconds for the enlargement animation
-                                slider.style.display = 'block';
-                                backgroundImage.style.display = 'none';
-                                prompt.style.display = 'none';
-                                carousel.classList.add('paused');
-                                showSlide(currentSlide);
-                            }, 500);
-                            activePanel = panel;
+                            textEl.classList.add('fade-in');
+                            textEl.classList.remove('scrolled');
                         }
-                    });
+                    }
+                });
 
-                    leftArrow.addEventListener('click', function(e) {
-                        e.stopPropagation();
-                        currentSlide = (currentSlide - 1 + slides.length) % slides.length; // Move to previous slide (with wraparound - if at slide 0, go to last slide)
-                        showSlide(currentSlide);
-                    });
-
-                    rightArrow.addEventListener('click', function(e) {
-                        e.stopPropagation();
-                        currentSlide = (currentSlide + 1) % slides.length; // Move to next slide (with wraparound - if at last slide, go to slide 0)
-                        showSlide(currentSlide);
-                    });
-
-                    closeButton.addEventListener('click', function(e) {
-                        e.stopPropagation();
+                panel.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    if (activePanel === panel) {
                         panel.classList.remove('active');
                         slider.style.display = 'none';
+                        promptEl.style.display = 'block';
                         backgroundImage.style.display = 'block';
-                        prompt.style.display = 'block';
+                        textEl.classList.remove('fade-in');
+                        textEl.classList.remove('scrolled');
                         carousel.classList.remove('paused');
+                        animationStartTime = Date.now() - (currentRotation / rotationSpeed);
                         activePanel = null;
-                    });
+                    } else {
+                        if (activePanel) {
+                            activePanel.classList.remove('active');
+                            activePanel.querySelector('.image-slider').style.display = 'none';
+                            activePanel.querySelector('.prompt').style.display = 'block';
+                            activePanel.querySelector('.background-image').style.display = 'block';
+                            activePanel.querySelector('.slider-text').classList.remove('fade-in');
+                            activePanel.querySelector('.slider-text').classList.remove('scrolled');
+                        }
 
+                        panel.classList.add('active');
+                        setTimeout(() => {
+                            slider.style.display = 'flex';
+                            promptEl.style.display = 'none';
+                            backgroundImage.style.display = 'none';
+                            textEl.style.opacity = '0';
+                            textEl.classList.remove('scrolled');
+                            textEl.classList.add('fade-in');
+                            carousel.classList.add('paused');
+                        }, 500);
+                        activePanel = panel;
+                    }
                 });
 
-                // Image error handling
-                document.querySelectorAll('img').forEach(function(img) {
-                    img.addEventListener('error', function() {
-                        console.error('Failed to load image: ' + img.src);
-                        img.style.display = 'none';
-                        var placeholder = document.createElement('div');
-                        placeholder.className = 'image-placeholder';
-                        placeholder.textContent = 'Image Not Found';
-                        img.parentNode.appendChild(placeholder);
-                    });
+                closeButton.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    panel.classList.remove('active');
+                    slider.style.display = 'none';
+                    promptEl.style.display = 'block';
+                    backgroundImage.style.display = 'block';
+                    textEl.classList.remove('fade-in');
+                    textEl.classList.remove('scrolled');
+                    carousel.classList.remove('paused');
+                    animationStartTime = Date.now() - (currentRotation / rotationSpeed);
+                    activePanel = null;
                 });
-            })
-            .catch(function(error) { // Error Handling for the Whole Function
-                console.error('Failed to fetch prompts:', error);
-                alert('Error loading carousel data. Please try again later.');
             });
+
+            const reshuffleButton = document.querySelector('#reshuffleButton');
+            if (reshuffleButton) {
+                reshuffleButton.addEventListener('click', () => {
+                    selectedPrompts = getRandomPrompts(prompts);
+                    activePanel = updatePanels(panels, selectedPrompts, carousel, activePanel);
+                });
+            }
+
+            document.querySelectorAll('img').forEach(img => {
+                img.addEventListener('error', () => {
+                    console.error('Failed to load image: ' + img.src);
+                    img.style.display = 'none';
+                    const placeholder = document.createElement('div');
+                    placeholder.className = 'image-placeholder';
+                    placeholder.textContent = 'Image Not Found';
+                    img.parentNode.appendChild(placeholder);
+                });
+            });
+        })
+        .catch(error => {
+            console.error('Failed to fetch prompts:', error);
+            alert('Error loading carousel data. Please try again later.');
         });
 
-        // Form submission
-        // Sends the data to a Google Script
-        // Reference: ChatGPT to look for the stardard coding for linkage
-        const scriptURL = "https://script.google.com/macros/s/AKfycbzQe3O4KuzH21alxgwm3CzceDktRBCNcYniNfaVVo7LMbrfTnEyRzHfMJaS8Y6_lWW6Ow/exec";
-        document.getElementById("waitlistForm").addEventListener("submit", async (e) => {
-            e.preventDefault();
-            const form = e.target;
-            const formData = new FormData(form);
-            try {
-                await fetch(scriptURL, { method: "POST", body: formData });
-                alert("You’ve been added to the waitlist!");
-                form.reset();
-            } catch (error) {
-                console.error("Error!", error);
-                alert("Something went wrong. Please try again.");
-            }
-        });
+    const scriptURL = "https://script.google.com/macros/s/AKfycbzQe3O4KuzH21alxgwm3CzceDktRBCNcYniNfaVVo7LMbrfTnEyRzHfMJaS8Y6_lWW6Ow/exec";
+    document.getElementById("waitlistForm").addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const form = e.target;
+        const formData = new FormData(form);
+        try {
+            await fetch(scriptURL, { method: "POST", body: formData });
+            alert("You've been added to the waitlist!");
+            form.reset();
+        } catch (error) {
+            console.error("Error!", error);
+            alert("Something went wrong. Please try again.");
+        }
+    });
+});

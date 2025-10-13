@@ -1,44 +1,52 @@
 [
     {
-        "prompt": "for the party you weren’t cool enough to be invited to as a kid.",
+        "prompt": "for the party you only said yes to because he’s going",
         "background": "image/prompt1/background.png",
         "sliderImages": [
-            "image/prompt1/image1.png",
-            "image/prompt1/image2.png",
-            "image/prompt1/image3.png"
+            "image/prompt1/image.png"
         ],
         "sliderText": [
-            "you watched their parties through\ninstagram stories,\nso now you pick the dress that lets you walk through every door like you own it.",
-            "back then you were too much, or not enough,so now you wear bows so obvious they have to say something.",
-            "they laughed at you for trying back then,so now you show up in a skirt they’d never understand."
+            "for the party you only said yes to because he’s going"
         ]
     },
     {
-        "prompt": "the girl who remembered everything, even after he acted like none of it ever happened.",
+        "prompt": "to feel like the version of you who never questioned herself in the mirror",
         "background": "image/prompt2/background.png",
         "sliderImages": [
-            "image/prompt2/image1.png",
-            "image/prompt2/image2.png",
-            "image/prompt2/image3.png"
+            "image/prompt2/image.png"
         ],
         "sliderText": [
-            "he said you never knew him.\nbut you still remember his birth time. you haven't worn these earrings in weeks.\nbut tonight, they’re not just an accessory. they're your proof: I was there.",
-            "his voice is still playing.\nhe says, 'you have no idea who I am.'\nyou wear this now, because remembering isn’t the same as being wrong.\nIt clings to you like the truth:\nsharp, undeniable, and hard to take off.",
-            "he said you never knew him.\nbut you still remember the way he once said pink looked good on you.\nyou wear this now because you believed him,\nand you still do."
+            "to feel like the version of you who never questioned herself in the mirror"
         ]
     },
     {
-        "prompt": "the night you swore it would just be one drink and then the night became go big or go home.",
+        "prompt": "for your cold city getaway",
         "background": "image/prompt3/background.png",
         "sliderImages": [
-            "image/prompt3/image1.png",
-            "image/prompt3/image2.png",
-            "image/prompt3/image3.png"
+            "image/prompt3/image.png"
         ],
         "sliderText": [
-            "you were too scared to ask for the life you wanted,\nso you chose the jacket that looked like it already belonged to her.",
-            "you didn’t send the application.\nbut you still put on the heels\nbecause some part of you needed to feel like maybe, you could.",
-            "You didn’t know if you had the courage to leave.\nBut you bought the sunglasses anyway.\nbecause looking untouchable felt safer than asking to be seen."
+            "for your cold city getaway"
+        ]
+    },
+    {
+        "prompt": "for the rare event where your closet suddenly feels too casual",
+        "background": "image/prompt3/background.png",
+        "sliderImages": [
+            "image/prompt4/image.png"
+        ],
+        "sliderText": [
+            "for the rare event where your closet suddenly feels too casual"
+        ]
+    },
+    {
+        "prompt": "for pizza and wine on the beach",
+        "background": "image/prompt3/background.png",
+        "sliderImages": [
+            "image/prompt5/image.png"
+        ],
+        "sliderText": [
+            "for pizza and wine on the beach"
         ]
     }
 ]

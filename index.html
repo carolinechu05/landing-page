@@ -1,5 +1,3 @@
-<!-- Reference: ChatGPT for some debugging and learn how to connect the data to Google sheet -->
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -14,8 +12,9 @@
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300..700&display=swap" rel="stylesheet">
 </head>
 <body>
+    <section class="section normal-bg">
     <section class="intro-section" aria-label="Carousel Introduction">
-        <h1 class="header_text">Explore Emotional Shopping</h1>
+        <h1 class="header_text">sift</h1>
         <p>Discover curated luxury items that resonate with your unique story. Click a panel to dive into a world of emotions and style.</p>
     </section>
     <section class="carousel-container">
@@ -24,20 +23,10 @@
                 <img src="image/prompt1/background.png" alt="Prompt 1 mood" class="background-image">
                 <div class="prompt"></div>
                 <div class="image-slider">
-                    <div class="image-slide">
-                        <img src="image/prompt1/image1.png" alt="Prompt 1 image 1" class="slider-image">
-                        <div class="slider-text"></div>
+                    <div class="image-scroll">
+                        <img src="image/prompt1/image.png" alt="Prompt 1 image" class="slider-image">
                     </div>
-                    <div class="image-slide">
-                        <img src="image/prompt1/image2.png" alt="Prompt 1 image 2" class="slider-image">
-                        <div class="slider-text"></div>
-                    </div>
-                    <div class="image-slide">
-                        <img src="image/prompt1/image3.png" alt="Prompt 1 image 3" class="slider-image">
-                        <div class="slider-text"></div>
-                    </div>
-                    <button class="arrow arrow-left">&larr;</button>
-                    <button class="arrow arrow-right">&rarr;</button>
+                    <div class="slider-text"></div>
                     <button class="close-button">&times;</button>
                 </div>
             </div>
@@ -45,20 +34,10 @@
                 <img src="image/prompt2/background.png" alt="Prompt 2 mood" class="background-image">
                 <div class="prompt"></div>
                 <div class="image-slider">
-                    <div class="image-slide">
-                        <img src="image/prompt2/image1.png" alt="Prompt 2 image 1" class="slider-image">
-                        <div class="slider-text"></div>
+                    <div class="image-scroll">
+                        <img src="image/prompt2/image.png" alt="Prompt 2 image" class="slider-image">
                     </div>
-                    <div class="image-slide">
-                        <img src="image/prompt2/image2.png" alt="Prompt 2 image 2" class="slider-image">
-                        <div class="slider-text"></div>
-                    </div>
-                    <div class="image-slide">
-                        <img src="image/prompt2/image3.png" alt="Prompt 2 image 3" class="slider-image">
-                        <div class="slider-text"></div>
-                    </div>
-                    <button class="arrow arrow-left">&larr;</button>
-                    <button class="arrow arrow-right">&rarr;</button>
+                    <div class="slider-text"></div>
                     <button class="close-button">&times;</button>
                 </div>
             </div>
@@ -66,25 +45,16 @@
                 <img src="image/prompt3/background.png" alt="Prompt 3 mood" class="background-image">
                 <div class="prompt"></div>
                 <div class="image-slider">
-                    <div class="image-slide">
-                        <img src="image/prompt3/image1.png" alt="Prompt 3 image 1" class="slider-image">
-                        <div class="slider-text"></div>
+                    <div class="image-scroll">
+                        <img src="image/prompt3/image.png" alt="Prompt 3 image" class="slider-image">
                     </div>
-                    <div class="image-slide">
-                        <img src="image/prompt3/image2.png" alt="Prompt 3 image 2" class="slider-image">
-                        <div class="slider-text"></div>
-                    </div>
-                    <div class="image-slide">
-                        <img src="image/prompt3/image3.png" alt="Prompt 3 image 3" class="slider-image">
-                        <div class="slider-text"></div>
-                    </div>
-                    <button class="arrow arrow-left">&larr;</button>
-                    <button class="arrow arrow-right">&rarr;</button>
+                    <div class="slider-text"></div>
                     <button class="close-button">&times;</button>
                 </div>
             </div>
         </div>
     </section>
+    <button id="reshuffleButton">shuffle prompts</button>
     <section class="footer-section" aria-label="Footer">
         <form id="waitlistForm">
             <p class="text">submit a prompt</p>
@@ -94,6 +64,40 @@
             <button class="submit-button" type="submit">join waitlist</button>
         </form>
         <p class="quote">“everything you liked, i liked five years ago”<br>- virgil abloh</p>
+    </section>
+    </section>
+    <section class="section inverted-bg">
+        <description>
+        <p>
+          sift is rebuilding fashion commerce around the one thing <br>algorithms forgot: feeling.
+        </p>
+        <p>
+            we’re not another marketplace. we’re not here to optimize clicks or predict trends.<br>
+            we’re here to protect what makes dressing matter: memory, contradiction, identity, and emotion.<br>
+            we’re here to make shopping fun again.
+        </p>
+        <p>
+            you don’t shop by category. You shop by rage, nostalgia, girlhood, rebirth.
+        </p>
+        <p>
+            in a world of frictionless SKU grids and agent-driven recommendations, sift brings back<br>
+            emotional context, brand storytelling, and cultural depth that can’t be flattened.
+        </p>
+        <p>
+            this isn’t just shopping.<br>
+            this is memory work.<br>
+            this is self-curation.<br>
+            this is identity, protected.
+        </p>
+        <p>
+            the future might forget who you are.<br>
+            we won’t."
+        </p>
+        </description>
+        
+    <div class="contact-link">
+        <p>reach out:<br><a href="mailto:enquiry@sift-info.com">enquiry@sift-info.com</a></p>
+    </div>
     </section>
     <div class="custom-cursor"></div>
     <script src="script.js"></script>
