@@ -1,16 +1,15 @@
 let typingTimeout = null;
+let visibilityInterval = null;
 
 // Typing animation function (used only for header description)
 function typeText(element, text, speed = 100) {
     if (typingTimeout) clearTimeout(typingTimeout);
     
-    // Normalize text: remove HTML tags and preserve line breaks
     const parser = new DOMParser();
     const doc = parser.parseFromString(text, 'text/html');
     const cleanText = doc.body.textContent || text;
     const textWithBreaks = cleanText.replace(/\n/g, '\n');
     
-    // Set full text temporarily to calculate height
     element.textContent = textWithBreaks;
     element.style.visibility = 'hidden';
     const height = element.offsetHeight;
@@ -31,6 +30,11 @@ function typeText(element, text, speed = 100) {
         }
     }
     type();
+}
+
+// Utility to append timestamp to image URLs
+function getImageUrlWithTimestamp(url) {
+    return url ? `${url}?${new Date().getTime()}` : '';
 }
 
 // Function to shuffle and select 3 unique prompts
@@ -95,15 +99,41 @@ function updatePanelVisibility() {
             backgroundImage.style.opacity = opacity * 0.7;
             backgroundImage.style.pointerEvents = opacity > 0.1 ? 'auto' : 'none';
         }
-        // Set pointer-events on the panel to disable clicks on back panels
         panel.style.pointerEvents = opacity > 0.1 ? 'auto' : 'none';
     });
 }
 
+// Function to wait for images to load
+async function waitForImages(panels) {
+    const imagePromises = [];
+    panels.forEach(panel => {
+        const backgroundImage = panel.querySelector('.background-image');
+        if (backgroundImage && backgroundImage.src) {
+            imagePromises.push(new Promise(resolve => {
+                if (backgroundImage.complete) {
+                    resolve();
+                } else {
+                    backgroundImage.onload = resolve;
+                    backgroundImage.onerror = () => {
+                        console.error('Failed to load image: ' + backgroundImage.src);
+                        resolve(); // Resolve even on error to avoid blocking
+                    };
+                }
+            }));
+        }
+    });
+    await Promise.all(imagePromises);
+}
+
 // Function to update panels with new prompts
-function updatePanels(panels, selectedPrompts, carousel, activePanel) {
+async function updatePanels(panels, selectedPrompts, carousel, activePanel) {
     const isMobile = window.innerWidth <= 768;
-    const timestamp = new Date().getTime(); // Timestamp to force image reload
+    
+    // Clear existing visibility interval to prevent premature updates
+    if (visibilityInterval) {
+        clearInterval(visibilityInterval);
+    }
+    
     panels.forEach((panel, panelIndex) => {
         const slider = panel.querySelector('.image-slider');
         const promptEl = panel.querySelector('.prompt');
@@ -123,117 +153,88 @@ function updatePanels(panels, selectedPrompts, carousel, activePanel) {
 
         const data = selectedPrompts[panelIndex] || {};
         promptEl.textContent = data.prompt || 'Prompt not available';
-        imgEl.src = data.sliderImages ? `${data.sliderImages[0]}?${timestamp}` : '';
+        imgEl.src = getImageUrlWithTimestamp(data.sliderImages ? data.sliderImages[0] : '');
         let sliderText = data.sliderText ? data.sliderText[0] : '';
         if (isMobile && sliderText.length > 80) {
             sliderText = sliderText.substring(0, 77) + '...';
         }
         textEl.textContent = sliderText;
-        backgroundImage.src = data.background ? `${data.background}?${timestamp}` : '';
+        backgroundImage.src = getImageUrlWithTimestamp(data.background || '');
     });
     
+    // Wait for images to load before updating visibility
+    await waitForImages(panels);
+    
+    // Reset carousel state
     animationStartTime = Date.now();
     currentRotation = 0;
-    updatePanelVisibility(); // Immediately update visibility after reshuffle
+    
+    // Update visibility immediately and resume interval
+    updatePanelVisibility();
+    visibilityInterval = setInterval(updatePanelVisibility, 50);
     
     return null;
 }
 
 // Fetch JSON and initialize carousel
-window.addEventListener('load', function() {
+window.addEventListener('load', async function() {
     const headerDesc = document.querySelector('.intro-section p');
     if (headerDesc) {
         typeText(headerDesc, headerDesc.innerHTML, 50);
     }
 
-    fetch('prompts.json')
-        .then(response => {
-            if (!response.ok) throw new Error('HTTP error! status: ' + response.status);
-            return response.json();
-        })
-        .then(prompts => {
-            // Preload all images to prevent loading issues
-            prompts.forEach(p => {
-                if (p.background) {
-                    const bgImg = new Image();
-                    bgImg.src = p.background;
-                }
-                if (Array.isArray(p.sliderImages)) {
-                    p.sliderImages.forEach(si => {
-                        const sliderImg = new Image();
-                        sliderImg.src = si;
-                    });
+    try {
+        const response = await fetch('prompts.json');
+        if (!response.ok) throw new Error('HTTP error! status: ' + response.status);
+        const prompts = await response.json();
+
+        // Preload all images
+        prompts.forEach(p => {
+            if (p.background) {
+                const bgImg = new Image();
+                bgImg.src = getImageUrlWithTimestamp(p.background);
+            }
+            if (Array.isArray(p.sliderImages)) {
+                p.sliderImages.forEach(si => {
+                    const sliderImg = new Image();
+                    sliderImg.src = getImageUrlWithTimestamp(si);
+                });
+            }
+        });
+
+        const carousel = document.querySelector('.carousel');
+        const panels = document.querySelectorAll('.panel');
+        let activePanel = null;
+
+        let selectedPrompts = getRandomPrompts(prompts);
+        await updatePanels(panels, selectedPrompts, carousel, activePanel);
+
+        visibilityInterval = setInterval(updatePanelVisibility, 50);
+
+        panels.forEach((panel, panelIndex) => {
+            const slider = panel.querySelector('.image-slider');
+            const closeButton = panel.querySelector('.close-button');
+            const promptEl = panel.querySelector('.prompt');
+            const imgEl = panel.querySelector('.slider-image');
+            const textEl = panel.querySelector('.slider-text');
+            const backgroundImage = panel.querySelector('.background-image');
+
+            const imageScroll = panel.querySelector('.image-scroll');
+            imageScroll.addEventListener('scroll', () => {
+                if (panel.classList.contains('active')) {
+                    if (imageScroll.scrollTop > 50) {
+                        textEl.classList.remove('fade-in');
+                        textEl.classList.add('scrolled');
+                    } else {
+                        textEl.classList.add('fade-in');
+                        textEl.classList.remove('scrolled');
+                    }
                 }
             });
 
-            const carousel = document.querySelector('.carousel');
-            const panels = document.querySelectorAll('.panel');
-            let activePanel = null;
-
-            let selectedPrompts = getRandomPrompts(prompts);
-            updatePanels(panels, selectedPrompts, carousel, activePanel);
-
-            setInterval(updatePanelVisibility, 50); // Keep interval but consider increasing to 100 for optimization if needed
-
-            panels.forEach((panel, panelIndex) => {
-                const slider = panel.querySelector('.image-slider');
-                const closeButton = panel.querySelector('.close-button');
-                const promptEl = panel.querySelector('.prompt');
-                const imgEl = panel.querySelector('.slider-image');
-                const textEl = panel.querySelector('.slider-text');
-                const backgroundImage = panel.querySelector('.background-image');
-
-                const imageScroll = panel.querySelector('.image-scroll');
-                imageScroll.addEventListener('scroll', () => {
-                    if (panel.classList.contains('active')) {
-                        if (imageScroll.scrollTop > 50) {
-                            textEl.classList.remove('fade-in');
-                            textEl.classList.add('scrolled');
-                        } else {
-                            textEl.classList.add('fade-in');
-                            textEl.classList.remove('scrolled');
-                        }
-                    }
-                });
-
-                panel.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    if (activePanel === panel) {
-                        panel.classList.remove('active');
-                        slider.style.display = 'none';
-                        promptEl.style.display = 'block';
-                        backgroundImage.style.display = 'block';
-                        textEl.classList.remove('fade-in');
-                        textEl.classList.remove('scrolled');
-                        carousel.classList.remove('paused');
-                        animationStartTime = Date.now() - (currentRotation / rotationSpeed);
-                        activePanel = null;
-                    } else {
-                        if (activePanel) {
-                            activePanel.classList.remove('active');
-                            activePanel.querySelector('.image-slider').style.display = 'none';
-                            activePanel.querySelector('.prompt').style.display = 'block';
-                            activePanel.querySelector('.background-image').style.display = 'block';
-                            activePanel.querySelector('.slider-text').classList.remove('fade-in');
-                            activePanel.querySelector('.slider-text').classList.remove('scrolled');
-                        }
-
-                        panel.classList.add('active');
-                        setTimeout(() => {
-                            slider.style.display = 'flex';
-                            promptEl.style.display = 'none';
-                            backgroundImage.style.display = 'none';
-                            textEl.style.opacity = '0';
-                            textEl.classList.remove('scrolled');
-                            textEl.classList.add('fade-in');
-                            carousel.classList.add('paused');
-                        }, 500);
-                        activePanel = panel;
-                    }
-                });
-
-                closeButton.addEventListener('click', (e) => {
-                    e.stopPropagation();
+            panel.addEventListener('click', (e) => {
+                e.stopPropagation();
+                if (activePanel === panel) {
                     panel.classList.remove('active');
                     slider.style.display = 'none';
                     promptEl.style.display = 'block';
@@ -243,32 +244,66 @@ window.addEventListener('load', function() {
                     carousel.classList.remove('paused');
                     animationStartTime = Date.now() - (currentRotation / rotationSpeed);
                     activePanel = null;
-                });
+                } else {
+                    if (activePanel) {
+                        activePanel.classList.remove('active');
+                        activePanel.querySelector('.image-slider').style.display = 'none';
+                        activePanel.querySelector('.prompt').style.display = 'block';
+                        activePanel.querySelector('.background-image').style.display = 'block';
+                        activePanel.querySelector('.slider-text').classList.remove('fade-in');
+                        activePanel.querySelector('.slider-text').classList.remove('scrolled');
+                    }
+
+                    panel.classList.add('active');
+                    setTimeout(() => {
+                        slider.style.display = 'flex';
+                        promptEl.style.display = 'none';
+                        backgroundImage.style.display = 'none';
+                        textEl.style.opacity = '0';
+                        textEl.classList.remove('scrolled');
+                        textEl.classList.add('fade-in');
+                        carousel.classList.add('paused');
+                    }, 500);
+                    activePanel = panel;
+                }
             });
 
-            const reshuffleButton = document.querySelector('#reshuffleButton');
-            if (reshuffleButton) {
-                reshuffleButton.addEventListener('click', () => {
-                    selectedPrompts = getRandomPrompts(prompts);
-                    activePanel = updatePanels(panels, selectedPrompts, carousel, activePanel);
-                });
-            }
-
-            document.querySelectorAll('img').forEach(img => {
-                img.addEventListener('error', () => {
-                    console.error('Failed to load image: ' + img.src);
-                    img.style.display = 'none';
-                    const placeholder = document.createElement('div');
-                    placeholder.className = 'image-placeholder';
-                    placeholder.textContent = 'Image Not Found';
-                    img.parentNode.appendChild(placeholder);
-                });
+            closeButton.addEventListener('click', (e) => {
+                e.stopPropagation();
+                panel.classList.remove('active');
+                slider.style.display = 'none';
+                promptEl.style.display = 'block';
+                backgroundImage.style.display = 'block';
+                textEl.classList.remove('fade-in');
+                textEl.classList.remove('scrolled');
+                carousel.classList.remove('paused');
+                animationStartTime = Date.now() - (currentRotation / rotationSpeed);
+                activePanel = null;
             });
-        })
-        .catch(error => {
-            console.error('Failed to fetch prompts:', error);
-            alert('Error loading carousel data. Please try again later.');
         });
+
+        const reshuffleButton = document.querySelector('#reshuffleButton');
+        if (reshuffleButton) {
+            reshuffleButton.addEventListener('click', async () => {
+                selectedPrompts = getRandomPrompts(prompts);
+                activePanel = await updatePanels(panels, selectedPrompts, carousel, activePanel);
+            });
+        }
+
+        document.querySelectorAll('img').forEach(img => {
+            img.addEventListener('error', () => {
+                console.error('Failed to load image: ' + img.src);
+                img.style.display = 'none';
+                const placeholder = document.createElement('div');
+                placeholder.className = 'image-placeholder';
+                placeholder.textContent = 'Image Not Found';
+                img.parentNode.appendChild(placeholder);
+            });
+        });
+    } catch (error) {
+        console.error('Failed to fetch prompts:', error);
+        alert('Error loading carousel data. Please try again later.');
+    }
 
     const scriptURL = "https://script.google.com/macros/s/AKfycbzQe3O4KuzH21alxgwm3CzceDktRBCNcYniNfaVVo7LMbrfTnEyRzHfMJaS8Y6_lWW6Ow/exec";
     document.getElementById("waitlistForm").addEventListener("submit", async (e) => {
