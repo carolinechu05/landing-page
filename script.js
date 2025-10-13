@@ -70,6 +70,16 @@ function updatePanelVisibility() {
         const backgroundImage = panel.querySelector('.background-image');
         
         if (panel.classList.contains('active')) {
+            // Active panels should always be fully visible
+            if (promptEl) {
+                promptEl.style.opacity = 1;
+                promptEl.style.pointerEvents = 'auto';
+            }
+            if (backgroundImage) {
+                backgroundImage.style.opacity = 0.7;
+                backgroundImage.style.pointerEvents = 'auto';
+            }
+            panel.style.pointerEvents = 'auto';
             return;
         }
         
@@ -153,6 +163,8 @@ async function updatePanels(panels, selectedPrompts, carousel, activePanel) {
 
         const data = selectedPrompts[panelIndex] || {};
         promptEl.textContent = data.prompt || 'Prompt not available';
+        promptEl.style.opacity = '1'; // Force immediate visibility
+        promptEl.style.transition = 'none'; // Remove any transitions
         imgEl.src = getImageUrlWithTimestamp(data.sliderImages ? data.sliderImages[0] : '');
         let sliderText = data.sliderText ? data.sliderText[0] : '';
         if (isMobile && sliderText.length > 80) {
@@ -160,14 +172,23 @@ async function updatePanels(panels, selectedPrompts, carousel, activePanel) {
         }
         textEl.textContent = sliderText;
         backgroundImage.src = getImageUrlWithTimestamp(data.background || '');
+        
+        // Force reflow to ensure transition reset takes effect
+        void promptEl.offsetWidth;
+        promptEl.style.transition = '';
     });
     
     // Wait for images to load before updating visibility
     await waitForImages(panels);
     
-    // Reset carousel state
+    // Reset carousel state and restart animation
     animationStartTime = Date.now();
     currentRotation = 0;
+    
+    // Remove and re-add animation to reset it
+    carousel.style.animation = 'none';
+    void carousel.offsetWidth; // Force reflow
+    carousel.style.animation = '';
     
     // Update visibility immediately and resume interval
     updatePanelVisibility();
@@ -233,6 +254,15 @@ window.addEventListener('load', async function() {
             });
 
             panel.addEventListener('click', (e) => {
+                // Only allow clicks on panels that are facing forward
+                const baseRotation = panelIndex * 120;
+                const totalRotation = (baseRotation + currentRotation) % 360;
+                const isFacingForward = (totalRotation >= 315 || totalRotation <= 45);
+                
+                if (!isFacingForward && !panel.classList.contains('active')) {
+                    return; // Ignore clicks on panels facing away
+                }
+                
                 e.stopPropagation();
                 if (activePanel === panel) {
                     panel.classList.remove('active');
