@@ -1,4 +1,4 @@
-body .normal-bg{
+body .normal-bg {
   margin: 0;
   font-family: 'Cormorant Garamond', serif;
   min-height: 100vh;
@@ -8,28 +8,29 @@ body .normal-bg{
   align-items: center;
   overflow-y: auto;
   position: relative;
-  background: 
+  
+  /* background: 
     linear-gradient(to bottom, rgba(255, 240, 245, 0.3), rgba(240, 230, 250, 0.2)),
     url('yellow.jpg') center center no-repeat;
   background-size: cover;
-  background-attachment: scroll;
+  background-attachment: scroll; */
 }
 
 /* Page 2 – flipped background only */
-.inverted-bg {
+/* .inverted-bg {
   position: relative;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
   justify-content: flex-end; /* Push content to bottom */
-  align-items: center; /* Center horizontally */
-  padding: 0;
+  /* align-items: center; Center horizontally */
+  /* padding: 0;
   padding-bottom: 100px;
   overflow: hidden;
-}
+} */ */
 
 /* Create a pseudo-element for the flipped background */
-.inverted-bg::before {
+/* .inverted-bg::before {
   content: '';
   position: absolute;
   top: 0;
@@ -44,33 +45,43 @@ body .normal-bg{
   background-position: center bottom;
   transform: scaleY(-1);
   z-index: -1; /* Put background behind content */
-}
+/* } */ */
 
 /* Style the content normally (no flip) */
-.inverted-bg * {
+/* .inverted-bg * {
   font-family: "Cormorant Garamond", "Cormorant Garamond Placeholder", serif;
   font-size: 30px;
   position: relative; /* Ensure content is above the background */
-}
+/* } */ */
 
 /* Style the description container */
-.inverted-bg description {
+/* .inverted-bg description {
   margin: 800px 50px 10px;
   text-align: center;
   width: 100%;
   color: rgba(78, 54, 58);
   text-shadow: 1px 1px 2px rgba(62, 48, 48, 0.3);
   animation: sparkle 2s infinite;
-}
+} */
 
-.inverted-bg description p {
+/* .inverted-bg description p {
   margin: 30px 0;
-}
+} */
 
 /* Remove default body margin that can cause white borders */
 body {
   margin: 0;
   padding: 0;
+  overflow-x: hidden; /* Prevents horizontal scrollbar */
+}
+
+canvas {
+  position: fixed !important; /* Fixed position keeps it covering viewport */
+  top: 0 !important;
+  left: 0 !important;
+  width: 100vw !important; /* Force full viewport width */
+  height: 100vh !important; /* Force full viewport height */
+  z-index: -1;
 }
 
 .section {
@@ -135,18 +146,19 @@ body {
 }
 
 .intro-section p {
-    font-size: 30px;
+    font-size: 50px;
     color: rgba(78, 54, 58);
     text-shadow: 1px 1px 2px rgba(62, 48, 48, 0.3);
     min-height: 80px;
-    margin: 80px auto;
-    max-width: 600px;
+    margin: 80px;
+    text-align: left;
+    font-weight: 500;
 }
 
 .carousel-container {
     perspective: 1200px;
-    width: 700px;
-    height: 600px;
+    width: min(80vw, 840px);
+    height: calc(min(80vw, 840px) * 0.857);
     position: relative;
     margin: 10% 0 0 0;
 }
@@ -166,13 +178,13 @@ body {
 
 .panel {
     position: absolute;
-    width: 220px;
-    height: 320px;
-    left: 240px;
-    top: 65px;
-    background: rgb(200, 154, 157, 0.5);
+    width: calc(min(80vw, 840px) * 0.314);
+    height: calc(min(80vw, 840px) * 0.457);
+    left: calc(min(80vw, 840px) * 0.343);
+    top: calc(min(80vw, 840px) * 0.093);
+    background: rgba(255, 255, 255, 0.5);
     border-radius: 15px;
-    box-shadow: 0 4px 20px rgba(149, 87, 90, 0.85);
+    box-shadow: 0 4px 20px rgba(222, 217, 217, 0.85);
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -185,12 +197,21 @@ body {
     transform-style: preserve-3d;
 }
 
-
 .panel.active {
-    width: 260px;
-    height: 360px;
-    transform: scale(1.2) translateZ(320px);
-    z-index: 10;
+    position: fixed !important;
+    top: 50% !important;
+    left: 50% !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    max-width: none !important;
+    max-height: none !important;
+    transform: translate(-50%, -50%) !important;
+    z-index: 1000;
+    box-shadow: 0 10px 50px rgba(0, 0, 0, 0.5);
+    transform-style: flat !important;
+    perspective: none !important;
+    background: rgba(255, 255, 255);
+    overflow-y: auto;
 }
 
 .panel img.background-image {
@@ -209,7 +230,6 @@ body {
     color: #2f2f2f;
     font-weight: 700;
     padding: 15px;
-    background: rgba(255, 245, 238, 0.75);
     border-radius: 10px;
     z-index: 1;
     text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.8);
@@ -223,6 +243,46 @@ body {
 
 .panel.active .image-slider {
     display: flex;
+    transform: none !important;
+    perspective: none !important;
+    width: 100%;
+    height: 100%;
+}
+
+.panel.active .slider-image {
+    filter: none;
+    transform: none !important;
+    width: auto;
+    height: 100%;
+    max-height: 80vh;
+    object-fit: contain;
+    margin: auto;
+    backface-visibility: visible;
+    -webkit-backface-visibility: visible;
+}
+
+.panel.active .slider-text {
+    filter: none;
+    transform: translate(-50%, 0) !important;
+    top: auto;
+    bottom: 20px;
+    font-size: 24px;
+    max-width: 90%;
+    padding: 15px 20px;
+}
+
+.panel.active .close-button {
+    transform: none !important;
+}
+
+.panel.active .image-scroll {
+    transform: none !important;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
 }
 
 .panel:not(.active) .image-slider {
@@ -238,15 +298,15 @@ body {
 }
 
 .panel:nth-child(1) {
-    transform: rotateY(0deg) translateZ(350px);
+    transform: rotateY(0deg) translateZ(calc(min(80vw, 840px) * 0.5));
 }
 
 .panel:nth-child(2) {
-    transform: rotateY(120deg) translateZ(350px);
+    transform: rotateY(120deg) translateZ(calc(min(80vw, 840px) * 0.5));
 }
 
 .panel:nth-child(3) {
-    transform: rotateY(240deg) translateZ(350px);
+    transform: rotateY(240deg) translateZ(calc(min(80vw, 840px) * 0.5));
 }
 
 @keyframes rotate {
@@ -257,9 +317,9 @@ body {
 .carousel-container::before {
     content: '';
     position: absolute;
-    top: -80px;
-    width: 800px;
-    height: 15px;
+    top: calc(min(80vw, 840px) * -0.095); /* -80/840 */
+    width: calc(min(80vw, 840px) * 0.952); /* 800/840 */
+    height: calc(min(80vw, 840px) * 0.018); /* 15/840 */
     border-radius: 50%;
     z-index: -1;
     box-shadow: 0 0 25px rgba(149, 87, 90);
@@ -272,9 +332,9 @@ body {
 .carousel-container::after {
     content: '';
     position: absolute;
-    width: 50px;
-    height: 50px;
-    top: -130px;
+    width: calc(min(80vw, 840px) * 0.06); /* 50/840 */
+    height: calc(min(80vw, 840px) * 0.06);
+    top: calc(min(80vw, 840px) * -0.155); /* -130/840 */
     left: 50%;
     transform: translateX(-50%);
     border-radius: 50%;
@@ -317,7 +377,7 @@ body {
 }
 
 .image-scroll::-webkit-scrollbar-thumb {
-    background: rgba(255, 105, 180, 0.5);
+    background: rgba(129, 129, 129, 0.5);
     border-radius: 2px;
 }
 
@@ -328,15 +388,14 @@ body {
 }
 
 .slider-text {
-    font-size: 15px;
+    font-size: 18px;
     position: absolute;
     top: 20px;
-    left: 45%;
-    right: -15%;
+    left: 50%;
     transform: translateX(-50%);
     color: #000000;
     font-weight: 700;
-    text-align: left;
+    text-align: center;
     border-radius: 5px;
     z-index: 2;
     white-space: pre-line;
@@ -344,6 +403,8 @@ body {
     line-height: 1.4;
     opacity: 0;
     transition: color 0.3s ease;
+    max-width: 90%;
+    padding: 10px 20px;
 }
 
 .slider-text.fade-in {
@@ -351,7 +412,8 @@ body {
 }
 
 .slider-text.scrolled {
-    color: #ffffff;
+    color: #000000;
+    background: rgba(255, 255, 255, 0.95);
 }
 
 @keyframes fadeIn {
@@ -361,26 +423,29 @@ body {
 
 .close-button {
     position: absolute;
-    top: 10px;
-    right: 10px;
-    background: transparent;
+    top: 15px;
+    right: 15px;
+    background: rgba(255, 255, 255, 0.9);
     color: rgb(42, 19, 67);
     border: none;
     cursor: pointer;
-    font-size: 20px;
-    z-index: 2;
+    font-size: 24px;
+    z-index: 3;
     border-radius: 50%;
-    width: 30px;
-    height: 30px;
+    width: 40px;
+    height: 40px;
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: color 0.3s ease;
+    transition: all 0.3s ease;
     font-weight: bold;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
 }
 
 .close-button:hover {
+    background: rgba(255, 255, 255, 1);
     color: #3219ab;
+    transform: scale(1.1);
 }
 
 .image-placeholder {
@@ -395,6 +460,22 @@ body {
     font-weight: bold;
     z-index: 1;
     border: none;
+}
+
+/* Backdrop for full-screen panel */
+.panel-backdrop {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5); /* Added back to prevent overlay issues */
+    z-index: 998; /* Below panel but above other content */
+}
+
+.panel-backdrop.active {
+    display: block;
 }
 
 .footer-section {
@@ -465,8 +546,6 @@ body {
     text-align: center;
 }
 
-
-
 #reshuffleButton {
     font-family: "Space Grotesk", sans-serif;
     margin: 40px auto 20px;
@@ -526,59 +605,78 @@ body {
   }
 
   .intro-section p {
-    font-size: 20px;
+    font-size: 50px;
+    color: rgba(78, 54, 58);
+    text-shadow: 1px 1px 2px rgba(62, 48, 48, 0.3);
     margin: 40px auto;
+    text-align: left;
+    font-weight: 500;
     max-width: 90%;
   }
 
   /* Carousel container - make it smaller and adjust layout */
   .carousel-container {
-    width: 100%;
-    max-width: 350px;
-    height: 400px;
+    width: min(80vw, 840px);
+    height: calc(min(80vw, 840px) * 0.857);
     margin: 20% auto 0;
     perspective: 800px;
   }
 
   /* Panels - smaller size for mobile */
   .panel {
-    width: 140px;
-    height: 200px;
+    width: calc(min(80vw, 840px) * 0.314);
+    height: calc(min(80vw, 840px) * 0.457);
     left: 50%;
     top: 50%;
     transform: translate(-50%, -50%);
   }
 
   .panel.active {
-    width: 180px;
-    height: 240px;
-    transform: translate(-50%, -50%) scale(1.1) translateZ(200px);
+    width: 100vw !important;
+    height: 100vh !important;
+    transform: translate(-50%, -50%) !important;
+    transform-style: flat !important;
+    perspective: none !important;
+    position: fixed !important;
+    top: 50% !important;
+    left: 50% !important;
+  }
+
+  .panel.active .slider-image {
+    max-height: 70vh;
+    object-fit: contain;
+    backface-visibility: visible;
+    -webkit-backface-visibility: visible;
+  }
+
+  .panel.active .slider-text {
+    font-size: 18px;
+    bottom: 10px;
   }
 
   .panel:nth-child(1) {
-    transform: translate(-50%, -50%) rotateY(0deg) translateZ(200px);
+    transform: translate(-50%, -50%) rotateY(0deg) translateZ(calc(min(80vw, 840px) * 0.238)); /* 200/840 */
   }
 
   .panel:nth-child(2) {
-    transform: translate(-50%, -50%) rotateY(120deg) translateZ(200px);
+    transform: translate(-50%, -50%) rotateY(120deg) translateZ(calc(min(80vw, 840px) * 0.238));
   }
 
   .panel:nth-child(3) {
-    transform: translate(-50%, -50%) rotateY(240deg) translateZ(200px);
+    transform: translate(-50%, -50%) rotateY(240deg) translateZ(calc(min(80vw, 840px) * 0.238));
   }
-
 
   /* Carousel decorative elements */
   .carousel-container::before {
-    top: -40px;
-    width: 300px;
-    height: 10px;
+    top: calc(min(80vw, 840px) * -0.095);
+    width: calc(min(80vw, 840px) * 0.952);
+    height: calc(min(80vw, 840px) * 0.018);
   }
 
   .carousel-container::after {
-    width: 30px;
-    height: 30px;
-    top: -70px;
+    width: calc(min(80vw, 840px) * 0.06);
+    height: calc(min(80vw, 840px) * 0.06);
+    top: calc(min(80vw, 840px) * -0.155);
   }
 
   /* Footer section */
@@ -590,7 +688,7 @@ body {
   }
 
   /* Reshuffle button */
-  #reshuffleButton {
+  .reshuffleButton {
     width: 90%;
     max-width: 300px;
     margin: 30px auto 20px;
@@ -630,10 +728,14 @@ body {
 
   /* Slider text adjustments */
   .slider-text {
-    font-size: 12px;
+    font-size: 14px;
     left: 50%;
-    right: 10px;
-    padding: 0 10px;
+    padding: 8px 15px;
+    background: rgba(255, 255, 255, 0.9);
+  }
+  
+  .slider-text.scrolled {
+    background: rgba(255, 255, 255, 0.95);
   }
 }
 
@@ -655,6 +757,9 @@ body {
   .panel {
     width: 120px;
     height: 180px;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
   }
 
   .prompt {
@@ -662,8 +767,22 @@ body {
   }
 
   .panel.active {
-    width: 160px;
-    height: 220px;
+    width: 100vw !important;
+    height: 100vh !important;
+    transform: translate(-50%, -50%) !important;
+    transform-style: flat;
+  }
+
+  .panel.active .slider-image {
+    max-height: 60vh;
+    object-fit: contain;
+    backface-visibility: visible;
+    -webkit-backface-visibility: visible;
+  }
+
+  .panel.active .slider-text {
+    font-size: 16px;
+    bottom: 5px;
   }
 
   .inverted-bg description {
@@ -678,36 +797,110 @@ body {
   .contact-link p,
   .contact-link a {
     font-size: 24px;
-    
   }
 
   .slider-text {
-    content-visibility: hidden;
+    content-visibility: auto; /* Changed from hidden to auto for visibility */
   }
 
   .close-button {
     position: absolute;
     top: 10px;
     right: 10px;
-    background: transparent;
+    background: rgba(255, 255, 255, 0.9);
     color: rgb(42, 19, 67);
     border: none;
     cursor: pointer;
     font-size: 20px;
-    z-index: 2;
+    z-index: 3;
     border-radius: 50%;
     width: 30px;
     height: 30px;
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: color 0.3s ease;
+    transition: all 0.3s ease;
     font-weight: bold;
-}
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  }
 
-.close-button:hover {
+  .close-button:hover {
+    background: rgba(255, 255, 255, 1);
     color: #3219ab;
+    transform: scale(1.1);
+  }
 }
 
-  
+.panel-overlay {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100vw; height: 100vh;
+  background: rgba(111, 106, 106, 0.5);
+  backdrop-filter: blur(8px);
+  display: none;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
 }
+
+.panel-overlay.active {
+  display: flex;
+}
+
+.overlay-content {
+  text-align: center;
+  color: #fff;
+  max-width: 90vw;
+  max-height: 85vh;
+  overflow: auto;
+}
+
+.overlay-bg {
+  max-width: 90vw;
+  max-height: 78vh;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  border-radius: 12px;
+  margin: 20px auto;
+  display: block;
+}
+
+.overlay-prompt {
+  font-size: 1.5rem;
+  font-weight: 500;
+  margin-bottom: 1rem;
+}
+
+.overlay-text {
+  font-size: 1rem;
+  color: #ccc;
+  line-height: 1.4;
+}
+
+.overlay-close {
+  position: absolute;
+  top: 20px; right: 30px;
+  font-size: 2rem;
+  color: #fff;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.panel.active .image-scroll {
+  display: flex;
+  flex-direction: column;
+  justify-content: center; /* center vertically */
+  align-items: center; /* center horizontally */
+  height: 100%;
+}
+
+.panel.active .slider-image {
+  max-height: 80vh; /* stay proportional */
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  margin: auto;
+}
+
