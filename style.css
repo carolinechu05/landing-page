@@ -157,7 +157,7 @@ canvas {
 
 .carousel-container {
     perspective: 1200px;
-    width: min(80vw, 840px);
+    width: min(90vw, 840px);
     height: calc(min(80vw, 840px) * 0.857);
     position: relative;
     margin: 10% 0 0 0;
@@ -178,10 +178,10 @@ canvas {
 
 .panel {
     position: absolute;
-    width: calc(min(80vw, 840px) * 0.314);
-    height: calc(min(80vw, 840px) * 0.457);
+    width: calc(min(90vw, 1000px) * 0.314);
+    height: calc(min(90vw, 1000px) * 0.457);
     left: calc(min(80vw, 840px) * 0.343);
-    top: calc(min(80vw, 840px) * 0.093);
+    top: calc(min(90vw, 1000px) * 0.15);
     background: rgba(255, 255, 255, 0.5);
     border-radius: 15px;
     box-shadow: 0 4px 20px rgba(222, 217, 217, 0.85);
@@ -226,7 +226,7 @@ canvas {
 }
 
 .prompt {
-    font-size: 18px;
+    font-size: 20px;
     color: #2f2f2f;
     font-weight: 700;
     padding: 15px;
@@ -317,9 +317,9 @@ canvas {
 .carousel-container::before {
     content: '';
     position: absolute;
-    top: calc(min(80vw, 840px) * -0.095); /* -80/840 */
-    width: calc(min(80vw, 840px) * 0.952); /* 800/840 */
-    height: calc(min(80vw, 840px) * 0.018); /* 15/840 */
+    top: calc(min(95vw, 1100px) * -0.095);
+    width: calc(min(95vw, 1100px) * 0.952);
+    height: calc(min(95vw, 1100px) * 0.018);
     border-radius: 50%;
     z-index: -1;
     box-shadow: 0 0 25px rgba(149, 87, 90);
@@ -332,9 +332,9 @@ canvas {
 .carousel-container::after {
     content: '';
     position: absolute;
-    width: calc(min(80vw, 840px) * 0.06); /* 50/840 */
-    height: calc(min(80vw, 840px) * 0.06);
-    top: calc(min(80vw, 840px) * -0.155); /* -130/840 */
+    width: calc(min(95vw, 1100px) * 0.06);
+    height: calc(min(95vw, 1100px) * 0.06);
+    top: calc(min(95vw, 1100px) * -0.155);
     left: 50%;
     transform: translateX(-50%);
     border-radius: 50%;
@@ -480,8 +480,8 @@ canvas {
 
 .footer-section {
     font-family: "Space Grotesk", sans-serif;
-    padding: 0px 20px 500px;
-    width: 300px;
+    padding: 100px 20px 50px;
+    width: 500px;
     margin: 60px auto;
     border-radius: 12px;
 }
@@ -489,7 +489,7 @@ canvas {
 .footer-section .text {
     font-weight: 500;
     letter-spacing: 0.3px;
-    font-size: 15px;
+    font-size: 28px;
     color: #7f7c7c;
     margin: 15px 0 3px;
 }
@@ -498,10 +498,10 @@ canvas {
     font-family: "Space Grotesk", sans-serif;
     color: #575555;
     width: 100%;
-    padding: 12px 14px;
+    padding: 16px 18px;
     border: 1px solid #ddd;
     border-radius: 8px;
-    font-size: 13px;
+    font-size: 20px;
     letter-spacing: 0.4px;
     line-height: 1.5;
     transition: border-color 0.3s ease, box-shadow 0.3s ease;
@@ -517,12 +517,12 @@ canvas {
 
 .footer-section .submit-button {
     font-family: "Space Grotesk", sans-serif;
-    margin-top: 15px;
-    padding: 12px 14px;
+    margin-top: 40px;
+    padding: 16px 18px;
     border: none;
     background:#552525;
     color: #fff;
-    font-size: 13px;
+    font-size: 28px;
     border-radius: 8px;
     cursor: pointer;
     transition: background 0.3s ease;
@@ -541,11 +541,11 @@ canvas {
 
 .quote {
     margin: 30px 0 0 0;
-    font-size: 13px;
+    font-size: 20px;
     color: #695f5f;
     text-align: center;
 }
-
+/* 
 #reshuffleButton {
     font-family: "Space Grotesk", sans-serif;
     margin: 40px auto 20px;
@@ -573,17 +573,17 @@ canvas {
     outline: none;
     box-shadow: none;
     border: none;
-}
+} */
 
-.sift-info {
+/* .sift-info {
   background: url('yellow.jpg') center/cover no-repeat;
   background-position: center bottom;
   transform: scaleY(-1);
-}
+} */
 
-.sift-info * {
-  transform: scaleY(-1); /* re-flip the content upright */
-}
+/* .sift-info * { */
+  /* transform: scaleY(-1); */
+/* } */
 
 /* ========================================
    MOBILE RESPONSIVE STYLES
@@ -618,7 +618,7 @@ canvas {
   .carousel-container {
     width: min(80vw, 840px);
     height: calc(min(80vw, 840px) * 0.857);
-    margin: 20% auto 0;
+    margin: 50% auto 0;
     perspective: 800px;
   }
 
@@ -683,19 +683,19 @@ canvas {
   .footer-section {
     width: 90%;
     max-width: 300px;
-    padding: 0px 20px 300px;
+    padding: 0px 20px 30px;
     margin: 40px auto;
   }
 
   /* Reshuffle button */
-  .reshuffleButton {
+  /* .reshuffleButton {
     width: 90%;
     max-width: 300px;
     margin: 30px auto 20px;
-  }
+  } */
 
   /* Inverted section description */
-  .inverted-bg {
+  /* .inverted-bg {
     padding-bottom: 50px;
   }
 
@@ -710,7 +710,7 @@ canvas {
 
   .inverted-bg * {
     font-size: 20px;
-  }
+  } */
 
   /* Contact link */
   .contact-link {
@@ -750,8 +750,11 @@ canvas {
   }
 
   .carousel-container {
-    max-width: 300px;
-    height: 350px;
+      perspective: 1200px;
+      width: min(90vw, 1000px); /* Increased from min(80vw, 840px) */
+      height: calc(min(90vw, 1000px) * 0.857);
+      position: relative;
+      margin: 10% 0 0 0;
   }
 
   .panel {
@@ -763,7 +766,7 @@ canvas {
   }
 
   .prompt {
-    font-size: 10px;
+    font-size: 18px;
   }
 
   .panel.active {
